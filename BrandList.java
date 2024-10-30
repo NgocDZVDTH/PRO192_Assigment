@@ -1,171 +1,167 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package Classes.Com;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class BrandList extends ArrayList<Brand> {
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+/**
+ *
+ * @author Hask
+ */
+public class BrandList {
 
-    Scanner scanner = new Scanner(System.in);
+    private ArrayList<Brand> brands = new ArrayList<>();
 
+    // Constructor
     public BrandList() {
     }
 
-    public boolean loadFromFile(String fileName) {
-        try {
-            File file = new File(fileName);
-            if (!file.exists()) {
-                System.out.println(file + " does not exist");
-                return false;
-            }
-            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-                String line = reader.readLine();
-                while (line != null) {
-                    String[] parts = line.split(",");
-                    String brandID = parts[0].trim();
+    // Phương thức trả về danh sách các Brand
+    public ArrayList<Brand> getBrands() {
+        return brands;
+    }
+
+    // Phương thức thêm một Brand vào danh sách
+    // Trường hợp load brand đã có trong file text
+    public void addBrand(Brand brand) {
+        brands.add(brand);
+    }
+
+    // Method to load brands from a file
+    public boolean loadFromFile(String filename) {
+        File f = new File(filename);
+        if (!f.exists()) {
+            System.out.println("File does not exist.");
+            return false;
+        }
+
+        try (BufferedReader br = new BufferedReader(new FileReader(f))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(", ");
+                if (parts.length >= 3) {
+                    String id = parts[0].trim();
                     String brandName = parts[1].trim();
-                    String[] soundBrandParts = parts[2].trim().split(":");
-                    String soundBrand = soundBrandParts[0].trim();
-                    double price = Double.parseDouble(soundBrandParts[1].trim());
-                    this.add(new Brand(brandID, brandName, soundBrand, price));
-                    line = reader.readLine();
+                    String soundBrand = parts[2].split(":")[0].trim();
+                    double price = Double.parseDouble(parts[2].split(":")[1].trim());
+
+                    Brand brand = new Brand(id, brandName, soundBrand, price);
+                    addBrand(brand);
                 }
             }
-            return true;
-        } catch (IOException e) {
+        } catch (IOException | NumberFormatException e) {
+            System.out.println("Error loading file: " + e.getMessage());
             return false;
         }
+        return true;
     }
 
-    public boolean saveToFile(String fileName) {
-        try {
-            try (FileWriter writer = new FileWriter(fileName)) {
-                for (Brand brand : this) {
-                    String line = brand.getBrandID() + ", " + brand.getBrandName() + ", " + brand.getSoundBrand() + ": " + brand.getPrice() + "\n";
-                    writer.write(line);
-                }
+    // Method to save brands to a file
+    public boolean saveToFile(String filename) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(filename))) {
+            for (Brand brand : brands) {
+                writer.println(brand.getBrandID() + "," + brand.getBrandName() + "," + brand.getSoundBrand() + "," + brand.getPrice());
             }
-            return true;
         } catch (IOException e) {
+            System.out.println("Error saving file: " + e.getMessage());
             return false;
         }
+        return true;
     }
 
-    public int searchID(String ID) {
-        if (!this.isEmpty()) {
-            for (int i = 0; i < this.size(); i++) {
-                if (this.get(i).getBrandID().equals(ID)) {
-                    return i;
-                }
+    // Method to search for a brand by ID
+    public int searchID(String bID) {
+        for (int i = 0; i < brands.size(); i++) {
+            if (brands.get(i).getBrandID().equals(bID)) {
+                return i;
             }
-        } else {
-            System.out.println("List is empty!");
         }
         return -1;
     }
 
+    // Method for user to choose a brand from the list
     public Brand getUserChoice() {
         Menu menu = new Menu();
-        return (Brand) menu.ref_getChoice(this);
+        return menu.ref_getChoice(brands);
     }
 
+    // Method to add a new brand
     public void addBrand() {
+        Scanner sc = new Scanner(System.in);
+
         String brandID;
         do {
-            brandID = inputString("Input brand ID: ", "Invalid");
-            if (isDuplicateBrandID(brandID)) {
-                System.out.println("Brand ID already exists!");
-            }
-        } while (isDuplicateBrandID(brandID));
-        String brandName = inputString("Input brand name: ", "Invalid");
-        String soundBrand = inputString("Input sound brand: ", "Invalid");
-        double price = inputDouble("Input price: ", "Invalid");
-        this.add(new Brand(brandID, brandName, soundBrand, price));
-        System.out.println("Added successfully!");
+            System.out.print("Enter Brand ID: ");
+            brandID = sc.nextLine();
+        } while (searchID(brandID) != -1);
+
+        String brandName;
+        do {
+            System.out.print("Enter Brand Name: ");
+            brandName = sc.nextLine();
+        } while (brandName.isEmpty());
+
+        String soundBrand;
+        do {
+            System.out.print("Enter Sound Brand: ");
+            soundBrand = sc.nextLine();
+        } while (soundBrand.isEmpty());
+
+        double price;
+        do {
+            System.out.print("Enter Price: ");
+            price = sc.nextDouble();
+        } while (price <= 0);
+
+        brands.add(new Brand(brandID, brandName, soundBrand, price));
+        System.out.println("New brand added!");
     }
 
-    public void updateBrand() {
-        if (!this.isEmpty()) {
-            String brandID = inputString("Input brand ID to update: ", "Invalid");
-            int index = searchID(brandID);
-            if (index < 0) {
-                System.out.println("Not found!");
-            } else {
-                String brandName = inputString("Input brand name: ", "Invalid");
-                String soundBrand = inputString("Input sound brand: ", "Invalid");
-                double price = inputDouble("Input price: ", "Invalid");
-                Brand brand = this.get(index);
-                brand.setBrandname(brandName);
-                brand.setSoundBrand(soundBrand);
-                brand.setPrice(price);
-                System.out.println("Updated successfully!");
-            }
-        } else {
-            System.out.println("List is empty!");
-        }
-    }
-
+// Method to list all unique brand names
     public void listBrands() {
-        if (!this.isEmpty()) {
-            this.forEach((brand) -> {
-                System.out.println(brand.toString());
-            });
-        } else {
-            System.out.println("List is empty!");
-        }
-    }
-
-    private double inputDouble(String msgNhap, String msgLoi) {
-        double number = 0;
-        boolean isValid = false;
-
-        while (!isValid) {
-            try {
-                System.out.print(msgNhap);
-                number = Double.parseDouble(scanner.nextLine());
-                if (number > 0) {
-                    isValid = true;
-                } else {
-                    System.out.println("Invalid input. Please enter a positive number.");
-                }
-            } catch (NumberFormatException e) {
-                System.out.println(msgLoi);
+        ArrayList<String> uniqueNames = new ArrayList<>();
+        int n = brands.size();
+        for (int i = 0; i < n; i++) {
+            String brandName = brands.get(i).getBrandName();
+            if (!uniqueNames.contains(brandName)) {
+                uniqueNames.add(brandName);
+                System.out.println(brandName);
             }
         }
-
-        return number;
     }
 
-    private String inputString(String message, String msgLoi) {
-        String input = "";
+    // Method to update an existing brand
+    public void updateBrand() {
+        Scanner sc = new Scanner(System.in);
 
-        while (true) {
-            try {
-                System.out.print(message);
-                input = scanner.nextLine().trim();
-                if (input.isEmpty()) {
-                    System.out.println("Invalid input.");
-                } else {
-                    break;
-                }
-            } catch (Exception e) {
-                System.out.println(msgLoi);
-            }
+        System.out.print("Enter Brand ID to update: ");
+        String brandID = sc.nextLine();
+
+        int pos = searchID(brandID);
+        if (pos < 0) {
+            System.out.println("Brand not found!");
+            return;
         }
 
-        return input;
-    }
-    
-    private boolean isDuplicateBrandID(String brandID) {
-        return this.stream().anyMatch((brand) -> (brand.getBrandID().equals(brandID)));
+        System.out.print("Enter new Brand Name: ");
+        String brandName = sc.nextLine();
+        System.out.print("Enter new Sound Brand: ");
+        String soundBrand = sc.nextLine();
+        System.out.print("Enter new Price: ");
+        double price = sc.nextDouble();
+
+        brands.get(pos).setBrandName(brandName);
+        brands.get(pos).setSoundBrand(soundBrand);
+        brands.get(pos).setPrice(price);
+
+        System.out.println("Brand updated successfully.");
     }
 }
