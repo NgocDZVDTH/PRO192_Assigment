@@ -1,0 +1,47 @@
+
+package Menu;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+import Brand.Brand;
+import Brand.BrandList;
+
+public class Menu {
+
+    private static List<String> choices = new ArrayList<String>();
+    private static BrandList brandchoices = new BrandList();
+    public void Menu() {
+
+    }
+
+    public static int int_getChoice(List<String> options) {
+        choices = options;
+        int temp;
+        Scanner input = new Scanner(System.in);
+        System.out.println();
+        System.out.println("__________________________________________________________________________________________________");
+        for (int i = 0; i < choices.size(); i++) {
+            System.out.println(String.format("%2d. %s", i + 1, choices.get(i)));
+        }
+        System.out.println("__________________________________________________________________________________________________");
+        System.out.print("Please choose an option from 1 to " + choices.size() + ": ");
+        temp = input.nextInt();
+        System.out.println("__________________________________________________________________________________________________");
+        return temp;
+    }
+
+    public static int int_getChoice(BrandList options) {
+        brandchoices = options;
+        Scanner input = new Scanner(System.in);
+        for (int i = 0; i < brandchoices.size(); i++) {
+            System.out.println(brandchoices.get(i));
+        }
+        System.out.print("Please choose an option from 0 to " + (brandchoices.size() - 1) + ": ");
+        return input.nextInt();
+    }
+
+    public static Brand ref_getChoice(BrandList options) {
+        return brandchoices.get(int_getChoice(options) - 1);
+    }
+}
