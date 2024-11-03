@@ -8,7 +8,7 @@ public class Menu {
     public static String inputString() {
         String input;
         do { //Nhập chuỗi không rỗng
-            input = scanner.nextLine().trim(); //Xoá khoảng trống
+            input = scanner.nextLine().trim(); 
             if (input.isEmpty()) {
                 System.err.println("Input cannot be empty.");
             }
