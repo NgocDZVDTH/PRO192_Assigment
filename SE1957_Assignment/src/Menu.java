@@ -37,10 +37,12 @@ public class Menu {
     public static <E> int int_getChoice(ArrayList<E> options) {
         int choice = -1;
         int size = options.size();
-        for (int i = 0; i < size; i++) {
+        System.out.println("__________________________________________________");
+        for (int i = 0; i < size; i++) {           
             System.out.println((i + 1) + ". " + options.get(i)); // In danh sách lựa chọn
         }  
         while (true) { // Yêu cầu người dùng chọn một lựa chọn
+            System.out.println("__________________________________________________");
             System.out.print("Please choose an option (1 - " + size + "): ");
             try {
                 choice = Integer.parseInt(scanner.nextLine());
