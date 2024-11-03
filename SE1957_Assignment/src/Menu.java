@@ -4,9 +4,7 @@ import java.util.Scanner;
 import java.util.ArrayList;
 
 public class Menu {
-
     private static final Scanner scanner = new Scanner(System.in);
-
     public static String inputString() {
         String input;
         do {
@@ -39,14 +37,10 @@ public class Menu {
     public static <E> int int_getChoice(ArrayList<E> options) {
         int choice = -1;
         int size = options.size();
-
-        // In danh sách lựa chọn
         for (int i = 0; i < size; i++) {
-            System.out.println((i + 1) + ". " + options.get(i));
-        }
-
-        // Yêu cầu người dùng chọn một lựa chọn
-        while (true) {
+            System.out.println((i + 1) + ". " + options.get(i)); // In danh sách lựa chọn
+        }  
+        while (true) { // Yêu cầu người dùng chọn một lựa chọn
             System.out.print("Please choose an option (1 - " + size + "): ");
             try {
                 choice = Integer.parseInt(scanner.nextLine());
@@ -59,17 +53,13 @@ public class Menu {
                 System.err.println("Please enter a valid number.");
             }
         }
-
         return choice;
     }
-
     public static <E> E ref_getChoice(ArrayList<E> options) {
         int response;
         do {
             response = int_getChoice(options); // Nhận lựa chọn từ người dùng
         } while (response < 1 || response > options.size());
-
         return options.get(response - 1); // Trả về đối tượng tương ứng với lựa chọn
     }
-
 }
