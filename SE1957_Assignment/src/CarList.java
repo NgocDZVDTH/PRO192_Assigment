@@ -186,16 +186,14 @@ public class CarList {
     // Phương thức in các xe dựa trên tên thương hiệu
     public void printBasedBrandName() {
         System.out.print("Enter part of the brand name: ");
-        String partOfBrandName = Menu.inputString();
+        String partOfBrandName = Menu.inputString().toLowerCase();
         int count = 0;
-
         for (Car car : cars) {
-            if (car.getBrand().getBrandName().contains(partOfBrandName)) {
+            if (car.getBrand().getBrandName().toLowerCase().contains(partOfBrandName)) {
                 System.out.println(car.screenString());
                 count++;
             }
         }
-
         if (count == 0) {
             System.err.println("No car is detected!");
         }
